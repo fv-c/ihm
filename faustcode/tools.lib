@@ -1,0 +1,28 @@
+//=============================CONVERSIONI===========================================
+//===================================================================================
+
+cartopol(x,y) = r, an
+with{
+    protect(el) = select2(el < 0, max(el,0.0001), el);
+    r = sqrt(x*x + y*y);
+    an = select2(x*y==0,tan(y/protect(x))^-1,0);
+};
+poltocar(r,an) = x,y 
+with {
+    x = r*cos(an);
+    y = r*sin(an);
+};
+
+sphetocart((r,theta,phi)) = x,y,z // r>0 0<theta<pi(angolo polare) -pi<phi<=pi(angolo azimutale)
+with {
+    x=r * sin(theta) * cos(phi);  // Calcola la coordinata x
+    y=r * sin(theta) * sin(phi);  // Calcola la coordinata y
+    z=r * cos(theta);              // Calcola la coordinata z
+};
+cartosphe((x,y,z)) = r,theta,phi
+with {
+    protect(el) = select2(el < 0, max(el,0.0001), el);
+    r=sqrt(x*x + y*y + z*z);              // Calcola il raggio
+    theta=select2(r==0,acos(z / protect(r)),0);    // Calcola l'angolo polare
+    phi=atan2(y, x);                         // Calcola l'angolo azimutale
+};

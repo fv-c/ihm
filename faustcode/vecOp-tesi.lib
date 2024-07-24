@@ -1,0 +1,25 @@
+import("stdfaust.lib");
+
+//=====================OPERAZIONI SUI VETTORI==========================
+//=====================================================================
+
+mag(v) = par(i,ba.count(v),ba.take(i+1,v)^2) :> sqrt;
+dotP(v,u) = par(i,ba.count(v),ba.take(i+1,v)*ba.take(i+1,u)) :>_;
+subV(v,u) = par(i,ba.count(v),ba.take(i+1,v)-ba.take(i+1,u));
+
+normVec(v) = nV
+with {
+    protect(el) = select2(el < 0, max(el,0.0001), el);
+    m = mag(v);
+    mag0 = select2(m==0,0,1);
+    nV = par(i,ba.count(v),select2(mag0,ba.take(i+1,v)/protect(m),0));
+};
+
+vecAng(v,u) = ang
+with{
+    protect(el) = select2(el < 0, max(el,0.0001), el);
+    obNum = dotP(v,u);
+    obDen = mag(u)*mag(v);
+    ob = select2(obDen==0,obNum/protect(obDen),0);
+    ang = select2(ob==0,acos(protect(ob)),0);
+};

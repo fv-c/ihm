@@ -1,0 +1,173 @@
+{
+	"patcher" : 	{
+		"fileversion" : 1,
+		"appversion" : 		{
+			"major" : 8,
+			"minor" : 3,
+			"revision" : 3,
+			"architecture" : "x64",
+			"modernui" : 1
+		}
+,
+		"classnamespace" : "dsp.gen",
+		"rect" : [ 647.0, 103.0, 661.0, 727.0 ],
+		"bglocked" : 0,
+		"openinpresentation" : 0,
+		"default_fontsize" : 12.0,
+		"default_fontface" : 0,
+		"default_fontname" : "Arial",
+		"gridonopen" : 1,
+		"gridsize" : [ 15.0, 15.0 ],
+		"gridsnaponopen" : 1,
+		"objectsnaponopen" : 1,
+		"statusbarvisible" : 2,
+		"toolbarvisible" : 1,
+		"lefttoolbarpinned" : 0,
+		"toptoolbarpinned" : 0,
+		"righttoolbarpinned" : 0,
+		"bottomtoolbarpinned" : 0,
+		"toolbars_unpinned_last_save" : 0,
+		"tallnewobj" : 0,
+		"boxanimatetime" : 200,
+		"enablehscroll" : 1,
+		"enablevscroll" : 1,
+		"devicewidth" : 0.0,
+		"description" : "",
+		"digest" : "",
+		"tags" : "",
+		"style" : "",
+		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
+		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-9",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 240.333333333333343, 683.0, 35.0, 22.0 ],
+					"text" : "out 2"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"code" : "//--DICHIARAZIONI--------------------------------\r\nDelay framedeltaD(vectorsize);\r\nDelay frameaccumD(vectorsize);\r\n\r\nHistory freezed(0);\r\nHistory onepoleHL(0);\r\nHistory onepoleHR(0);\r\n\r\nBuffer frame(\"frame\");\r\n\r\nParam stereo(0);\r\n\r\nrealPIn = in1;\r\nimgPIn = in2;\r\nbinIndex = in3;\r\nstate = in4;\r\n\r\n//-----------------------------------------------\r\n\r\nampIn, phIn = cartopol(realPIn, imgPIn);\r\n\r\nframedeltaPh0 = framedeltaD.read(vectorsize, interp=\"none\");\r\nframedeltaD.write(phIn);\r\nframedeltaPh = phIn - framedeltaPh0;\r\n\r\nphasewrapPh = phasewrap(framedeltaPh);\r\n\r\nif(state == 0) {\r\n\t\tfreezed = 0;\r\n\t} else {\r\n\t\tif(binIndex < (vectorsize - 1)) {\r\n\t\t\tfreezed = freezed;\r\n\t\t} else {\r\n\t\t\tfreezed = 1;\r\n\t\t}\r\n\t}\r\n\r\nif(freezed == 0) {\r\n\tpoke(frame, ampIn , binIndex, 0, 0);\r\n\tpoke(frame, phasewrapPh , binIndex, 1, 0);\r\n} else {\r\n\tpoke(frame, ampIn , 4096, 0, 0);\r\n\tpoke(frame, phasewrapPh , 4096, 1, 0);\r\n\tempty = 0;\r\n}\r\n\r\nampRead = peek(frame, binIndex, 0, channels=1);\r\nphRead = peek(frame, binIndex, 1, channels=1);\r\n\r\nframeaccumPh0 = frameaccumD.read(vectorsize, interp=\"none\");\r\nframeaccumPh = phRead + frameaccumPh0;\r\nframeaccumD.write(frameaccumPh);\r\n\r\nrealPout, imgPout = poltocar(ampRead, frameaccumPh);\r\n\r\nout1 = realPout * freezed;\r\nout2 = imgPout * freezed;",
+					"fontface" : 0,
+					"fontname" : "<Monospaced>",
+					"fontsize" : 12.0,
+					"id" : "obj-7",
+					"maxclass" : "codebox",
+					"numinlets" : 4,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 50.0, 85.0, 590.0, 585.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-5",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 291.0, 7.0, 122.0, 22.0 ],
+					"text" : "in 4 @comment state"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-3",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 96.0, 55.0, 141.0, 22.0 ],
+					"text" : "in 3 @comment binIndex"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-1",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 50.0, 7.0, 124.0, 22.0 ],
+					"text" : "in 1 @comment realP"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-2",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 76.0, 31.0, 123.0, 22.0 ],
+					"text" : "in 2 @comment imgP"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-4",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 50.0, 683.0, 35.0, 22.0 ],
+					"text" : "out 1"
+				}
+
+			}
+ ],
+		"lines" : [ 			{
+				"patchline" : 				{
+					"destination" : [ "obj-7", 0 ],
+					"source" : [ "obj-1", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-7", 1 ],
+					"source" : [ "obj-2", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-7", 2 ],
+					"source" : [ "obj-3", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-7", 3 ],
+					"source" : [ "obj-5", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-4", 0 ],
+					"source" : [ "obj-7", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-9", 0 ],
+					"source" : [ "obj-7", 1 ]
+				}
+
+			}
+ ],
+		"autosave" : 0
+	}
+
+}
